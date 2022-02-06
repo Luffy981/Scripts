@@ -1,9 +1,9 @@
 #!/bin/bash
-if [[ $2 ]]; then
+if [[ $1 ]]; then
   export FLASK_APP=$2
   export FLASK_DEBUG=1
   flask run
-elif [[ !$2 ]]; then
+elif [[ !$1 ]]; then
   
   echo "Usage: ./init_flask.sh [filename]"
   echo "Try again please..."
