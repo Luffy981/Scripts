@@ -1,0 +1,118 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5433:5432"  
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pirateking
+    volumes:
+      - ./backup_db_files:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+
+  api_cli:
+    build: ./api-cli
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./api-cli/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  api_catalog:
+    build: ./api_catalog
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./api_catalog/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  api_gateway:
+    build: ./api-gateway
+    ports:
+      - "5003:5003"
+    env_file:
+      - ./api-gateway/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  mic_app_bi_catalog:
+    build:
+      context: ./mic_app_bi_catalog
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    env_file:
+      - ./mic_app_bi_catalog/.appenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  mic_app_catalog:
+    build: ./mic_app_catalog
+    ports:
+      - "5005:5005"
+    env_file:
+      - ./mic_app_catalog/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  mic_app_user:
+    build: ./mic_app_user
+    ports:
+      - "5006:5006"
+    env_file:
+      - ./mic_app_user/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  cli_admin:
+    build: ./cli_admin
+    ports:
+      - "5007:5007"
+    env_file:
+      - ./cli_admin/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  mic_app_business:
+    build: ./mic_app_business
+    ports:
+      - "5008:5008"
+    env_file:
+      - ./mic_app_business/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  mic_app_report:
+    build: ./mic_app_report
+    ports:
+      - "5009:5009"
+    env_file:
+      - ./mic_app_report/.flaskenv
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+networks:
+  backend:
